@@ -12,8 +12,30 @@ services:
     # те все изменения в локальной папке будут происходить в докер контейнере
     volumes:
       - ./service:/service
+    # создаём окружение джанго
+    environment:
+      - DB_HOST=database    # ссылка на другой сервис в docker-compose
+      - DB_NAME=dbname
+      - DB_USER=dbuser
+      - DB_PASS=pass
 
     # указываем какую команду нужно запустить для запуска джанго сервера
     # sh -c - запускаем линукс shell, 0.0.0.0:8000 все адреса на данной машине на 8000 порт
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
+
+    # установливаем зависимость данного сервиса от сервиса database, чтобы web-app запускался только после database
+    depends_on:
+      - database
+
+  # придумываем название для приложения (датабазы)
+  database:
+    # указываем название образа в докерхабе, alpine облегчённая версия линукс
+    image: postgres:14.6-alpine
+    # создаём окружение postgres и указываем переменные для родключения джанго к дб
+    # POSTGRES_DB - придумываем имя для дб (dbname) POSTGRES_USER - придумываем имя юзеру
+    environment:
+      - POSTGRES_DB=dbname
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=pass
+
