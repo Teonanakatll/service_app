@@ -18,7 +18,7 @@ class Plan(models.Model):
         ('discount', 'Discount')
     )
 
-    plan_tupe = models.CharField('Тариф', choices=PLAN_TYPES, max_length=10)
+    plan_type = models.CharField('Тариф', choices=PLAN_TYPES, max_length=10)
     # валидатор чтобы размер скидки не мог быть больше 100%, валидаторы принимают список
     discount_percent = models.PositiveSmallIntegerField('Скидка', default=0,
                                                         validators=[

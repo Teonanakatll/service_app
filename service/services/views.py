@@ -8,10 +8,9 @@ from services.serializers import SubscriptionSerializer
 
 
 class SubscriptionView(ReadOnlyModelViewSet):
-    queryset = Subscription.objects.all().prefetch_related(
+    queryset = Subscription.objects.all().prefetch_related('plan',
         # для модели client запрашиваем связанного user, и берём только поле company_name,
         # и поле email из связанной модели user (OneToOne)
-        Prefetch('client', queryset=Client.objects.all().select_related('user').only('company_name',
-                                                                                        'user__email'))
+        Prefetch('client', queryset=Client.objects.all().select_related('user').only('company_name', 'user__email'))
     )
     serializer_class = SubscriptionSerializer
