@@ -1,4 +1,7 @@
+import time
+
 from celery import shared_task
+from celery_singleton import Singleton
 
 # @shared_task создаст независимый экземпляр задачи для каждого приложения,
 # что позволит повторно использовать задачу.
@@ -8,9 +11,13 @@ from celery import shared_task
 from django.db.models import F
 
 # при изменении тасков нужно перезагрузить docker, celery сам не перезагружается
-@shared_task
+# Singleton - ориентируется на переданное id и если таска с таким аргументом есть он не создасе новую
+@shared_task(base=Singleton)
 def set_price(subscription_id):
     from services.models import Subscription
+
+    time.sleep(5)
+
     # .annotate() - применяется только на queryset
     subscription = Subscription.objects.filter(id=subscription_id).annotate(
         annotated_price=(F('service__full_price') - F('service__full_price') * (F('plan__discount_percent') / 100.00))).first()
