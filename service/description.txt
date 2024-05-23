@@ -1,0 +1,12 @@
+docker-compose build                  - собирает сервисы описанные в конфигурационных файлах
+
+docker-compose up                     - запускает собранные образы
+
+
+docker-compose run --rm web-app sh -c "django-admin startproject service ." 
+		--rm                          - удалить кониейнер после того как команда выполнится
+		sh -c                         - запустить команду с помощю линукс shell
+		
+docker-compose run --rm web-app sh -c "python manage.py migrate"  - миграция
+
+docker-compose run --rm web-app sh -c "python manage.py createsuperuser"
