@@ -44,7 +44,7 @@ services:
     image: redis:7.0.5-alpine
     hostname: redis
 
- # придумываем название для приложения
+ # придумываем название для приложения Celery
   worker:
     build:
       context: .
@@ -64,6 +64,13 @@ services:
     # устанавливаем зависимость от сервиса redis, запуск только после запуска redis
     depends_on:
       - redis
+      - database
+      # тк worker также является джанго приложением у него должна быть связь с дб
+    environment:
+      - DB_HOST=database    # ссылка на другой сервис в docker-compose
+      - DB_NAME=dbname
+      - DB_USER=dbuser
+      - DB_PASS=pass
 
   # веб приложение с графической оболочкой пдля просмотра тасков
   flower:

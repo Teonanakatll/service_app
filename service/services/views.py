@@ -12,10 +12,10 @@ class SubscriptionView(ReadOnlyModelViewSet):
         # для модели client запрашиваем связанного user, и берём только поле company_name,
         # и поле email из связанной модели user (OneToOne)
         Prefetch('client', queryset=Client.objects.all().select_related('user').only('company_name', 'user__email')))\
-        .annotate(price=(F('service__full_price') -
-                         F('service__full_price') *
-                         # 100.00 чтобы получить в результате дробь
-                         (F('plan__discount_percent') / 100.00)))
+        # .annotate(price=(F('service__full_price') -
+        #                  F('service__full_price') *
+        #                  # 100.00 чтобы получить в результате дробь
+        #                  (F('plan__discount_percent') / 100.00)))
     serializer_class = SubscriptionSerializer
 
     # переопределяем метод list который отвечает за обработку запросса и формирования ответа клиенту
