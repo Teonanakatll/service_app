@@ -39,3 +39,65 @@ services:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=pass
 
+  # придумываем имя для сервиса redis
+  redis:
+    image: redis:7.0.5-alpine
+    hostname: redis
+
+ # придумываем название для приложения
+  worker:
+    build:
+      context: .
+    # придумываем hostname, по какому хостнейму будет определяться этот сервис
+    hostname: worker
+    # entrypoint - базовая команда вызывая которую мы будем писать команды этому сервису
+    entrypoint: celery
+    # celery_app - файл который мы сейчас создадим, app - переменная которую мы сейчас создадим
+    # worker - создаём воркера, --loglevel=info - задаём уровень логирования
+    command: -A celery_app.app worker --loglevel=info
+    # монтируем папку в selery потому что по сути selefy и есть джано приложение
+    volumes:
+      - ./service:/service
+    links:
+      # выступает в качестве брокера
+      - redis
+    # устанавливаем зависимость от сервиса redis, запуск только после запуска redis
+    depends_on:
+      - redis
+
+  # веб приложение с графической оболочкой пдля просмотра тасков
+  flower:
+    build:
+      context: .
+    hostname: flower
+    entrypoint: celery
+    # команда запуска Celery, для запуска этого приложения
+    command: -A celery_app.app flower
+    volumes:
+      - ./service:/service
+
+    # зависимости как и у celety
+    links:
+      # выступает в качестве брокера
+      - redis
+    # устанавливаем зависимость от сервиса redis, запуск только после запуска redis
+    depends_on:
+      - redis
+    ports:
+      # пробрасываем порт в нашу локальную машину
+      - "5555:5555"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
