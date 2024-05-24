@@ -10,3 +10,8 @@ docker-compose run --rm web-app sh -c "django-admin startproject service ."
 docker-compose run --rm web-app sh -c "python manage.py migrate"  - миграция
 
 docker-compose run --rm web-app sh -c "python manage.py createsuperuser"
+
+ docker system prune -a -f            - очистка компьютера от мусора докера
+ docker system df                     - посмотреть докер
+Удалить неиспользуемые образы: docker rmi $(docker images -q -f dangling=true)
+Удалить контейнеры: docker rm $(docker ps -a -q -f status=exited)

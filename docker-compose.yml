@@ -72,6 +72,37 @@ services:
       - DB_USER=dbuser
       - DB_PASS=pass
 
+
+ # придумываем название для приложения Celery
+  worker2:
+    build:
+      context: .
+    # придумываем hostname, по какому хостнейму будет определяться этот сервис
+    hostname: worker2
+    # entrypoint - базовая команда вызывая которую мы будем писать команды этому сервису
+    entrypoint: celery
+    # celery_app - файл который мы сейчас создадим, app - переменная которую мы сейчас создадим
+    # worker - создаём воркера, --loglevel=info - задаём уровень логирования
+    command: -A celery_app.app worker --loglevel=info
+    # монтируем папку в selery потому что по сути selefy и есть джано приложение
+    volumes:
+      - ./service:/service
+    links:
+      # выступает в качестве брокера
+      - redis
+    # устанавливаем зависимость от сервиса redis, запуск только после запуска redis
+    depends_on:
+      - redis
+      - database
+      # тк worker также является джанго приложением у него должна быть связь с дб
+    environment:
+      - DB_HOST=database    # ссылка на другой сервис в docker-compose
+      - DB_NAME=dbname
+      - DB_USER=dbuser
+      - DB_PASS=pass
+
+
+
   # веб приложение с графической оболочкой пдля просмотра тасков
   flower:
     build:

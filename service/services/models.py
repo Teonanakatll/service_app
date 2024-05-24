@@ -2,7 +2,7 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 
 from client.models import Client
-from services.tasks import set_price
+from services.tasks import set_price, set_comment
 
 
 class Service(models.Model):
@@ -54,6 +54,7 @@ class Plan(models.Model):
             for subscription in self.subscriptions.all():
                 # пересчитываем цену с помощю таски set_price
                 set_price.delay(subscription.id)
+                set_comment.delay(subscription.id)
 
         return super().save(*args, **kwargs)
 
@@ -65,6 +66,7 @@ class Subscription(models.Model):
     service = models.ForeignKey(Service, related_name='subscriptions', on_delete=models.PROTECT)
     plan = models.ForeignKey(Plan, related_name='subscriptions', on_delete=models.PROTECT)
     price = models.PositiveSmallIntegerField(default=0)
+    comment = models.CharField(max_length=50, default='')
 
 
     # минус такого подхода в том что если у связанных моделей меняется цена или скидка
